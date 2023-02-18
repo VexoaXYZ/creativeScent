@@ -8,8 +8,10 @@ AddEventHandler("NotifyNearbyPlayers", function(scentType, playerPos)
     for _, player in ipairs(GetPlayers()) do
         local playerPed = GetPlayerPed(player)
         local playerCoords = GetEntityCoords(playerPed)
+        local targetPos = vector3(playerPos.x, playerPos.y, playerPos.z)
+        local distance = #(playerCoords - targetPos)
         
-        if GetDistanceBetweenCoords(playerCoords.x, playerCoords.y, playerCoords.z, playerPos.x, playerPos.y, playerPos.z, true) < Config.DetectionRadius then
+        if distance < 5 then
             -- Add the scent to the detected scents table
             table.insert(detectedScents, scentType)
 
@@ -21,7 +23,6 @@ AddEventHandler("NotifyNearbyPlayers", function(scentType, playerPos)
         end
     end
 end)
-
 -- Event handler to listen for the "ClearAllScents" event
 RegisterServerEvent("ClearMyScents")
 AddEventHandler("ClearMyScents", function()
