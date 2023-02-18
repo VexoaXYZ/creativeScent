@@ -1,61 +1,59 @@
--- Table to store spotted users
-local spottedUsers = {}
+-- Create a table to store the scents that have been detected
+local detectedScents = {}
 
--- Function to display a notification to nearby players
-function DisplayNotificationToNearbyPlayers(location, scentType)
-    -- Get all players in the server
-    local players = GetPlayers()
+-- Event handler to listen for the "NotifyNearbyPlayers" event
+RegisterServerEvent("NotifyNearbyPlayers")
+AddEventHandler("NotifyNearbyPlayers", function(scentType, playerPos)
+-- Loop through all players and check if they are within the detection radius
+for _, player in ipairs(GetPlayers()) do
+local playerPed = GetPlayerPed(player)
+local playerCoords = GetEntityCoords(playerPed)
+            
+if Vdist(playerCoords, playerPos) < Config.DetectionRadius then
+        -- Add the scent to the detected scents table
+        table.insert(detectedScents, scentType)
 
-    -- Loop through each player
-    for _, playerId in ipairs(players) do
-        -- Get the player's ped and position
-        local playerPed = GetPlayerPed(playerId)
-        local playerPos = GetEntityCoords(playerPed)
+        -- Trigger the client event to display the notification
+        TriggerClientEvent("DisplayNotification", player, scentType)
 
-        -- Calculate the distance between the player and the scent location
-        local distance = #(playerPos - location)
-
-        -- If the player is within a certain distance, display the notification to them
-        if distance <= 50.0 then
-            TriggerClientEvent("DisplayNotification", playerId, "There's a scent of "..scentType.." nearby at "..location)
-        end
+        -- Trigger the server event to store the scent on the client's end
+        TriggerClientEvent("StoreDetectedScents", player, detectedScents)
     end
 end
 
--- Event handler for when a player leaves the server
+-- Event handler to listen for the "ClearAllScents" event
+RegisterServerEvent("ClearMyScents")
+AddEventHandler("ClearMyScents", function()
+local player = source -- Get the player who triggered the event
+-- Clear the detected scents table for this player
+SetDetectedScents(player, {})
+end)
+
+-- Helper function to get a player's detected scents
+function GetDetectedScents(player)
+local detectedScents = {}
+-- Get the detected scents table for this player from the player's "detectedScents" data
+if Players[player] and Players[player].detectedScents then
+    detectedScents = Players[player].detectedScents
+end
+
+return detectedScents
+end
+
+-- Helper function to set a player's detected scents
+function SetDetectedScents(player, detectedScents)
+-- Save the detected scents table for this player to the player's "detectedScents" data
+if not Players[player] then
+Players[player] = {}
+end
+Players[player].detectedScents = detectedScents
+end
+      
+        
+-- Function to remove a player's data when they disconnect
 AddEventHandler("playerDropped", function()
-    -- Remove the player from the spotted users table
-    spottedUsers[source] = nil
-end)
-
--- Function to print a message when the script starts
-Citizen.CreateThread(function()
-    print("Thanks for using Weed/Cannabis Script By Creative Solutions")
-end)
-
--- Export function to get the last spotted user
-exports("GetLastSpottedUser", function()
-    local lastUser = nil
-    local lastLocation = nil
-
-    -- Loop through all spotted users
-    for userId, data in pairs(spottedUsers) do
-        -- If this user was spotted more recently than the previous one, update the last spotted user
-        if lastLocation == nil or #(data.position - lastLocation) < 10.0 then
-            lastUser = userId
-            lastLocation = data.position
-        end
-    end
-
-    return lastUser
-end)
-
--- Event handler to listen for the "NotifyNearbyPlayers" command
-RegisterServerEvent("NotifyNearbyPlayers")
-AddEventHandler("NotifyNearbyPlayers", function(scentType, location)
-    -- Store the location in the spotted users table
-    spottedUsers[source] = {position = location, scentType = scentType}
-
-    -- Display the notification to nearby players
-    DisplayNotificationToNearbyPlayers(location, scentType)
+local player = source -- Get the player who disconnected
+                
+                -- Remove the player's data from the table
+Players[player] = nil
 end)
