@@ -28,7 +28,7 @@ RegisterCommand("weed", function(source, args, rawCommand)
 ShowNotification("You used the /weed command, nearby players have been notified of a scent of weed.")
         -- Trigger the server event to notify nearby players
 local playerPos = GetEntityCoords(PlayerPedId())
-TriggerServerEvent("NotifyNearbyPlayers", "Weed", playerPos)
+TriggerServerEvent("NotifyNearbyPlayers", "A scent of Weed was detected", playerPos)
 end, false)
 
 -- Register the "cannabis" command
@@ -37,7 +37,7 @@ RegisterCommand("cannabis", function(source, args, rawCommand)
 ShowNotification("You used the /cannabis command, nearby players have been notified of a scent of cannabis.")
         -- Trigger the server event to notify nearby players
 local playerPos = GetEntityCoords(PlayerPedId())
-TriggerServerEvent("NotifyNearbyPlayers", "Cannabis", playerPos)
+TriggerServerEvent("NotifyNearbyPlayers", "A scent of Cannabis was detected", playerPos)
 end, false)
 
 -- Register the "alcohol" command
@@ -47,7 +47,7 @@ ShowNotification("You used the /alcohol command, nearby players have been notifi
 
 -- Trigger the server event to notify nearby players
 local playerPos = GetEntityCoords(PlayerPedId())
-TriggerServerEvent("NotifyNearbyPlayers", "Alcohol", playerPos)
+TriggerServerEvent("NotifyNearbyPlayers", "A scent of Alcohol was detected", playerPos)
 end, false)
 
 -- Register the "toggle" command
