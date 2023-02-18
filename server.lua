@@ -20,7 +20,7 @@ if Vdist(playerCoords, playerPos) < Config.DetectionRadius then
         TriggerClientEvent("StoreDetectedScents", player, detectedScents)
     end
 end
-
+end)
 -- Event handler to listen for the "ClearAllScents" event
 RegisterServerEvent("ClearMyScents")
 AddEventHandler("ClearMyScents", function()
