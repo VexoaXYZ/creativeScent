@@ -4,23 +4,24 @@ local detectedScents = {}
 -- Event handler to listen for the "NotifyNearbyPlayers" event
 RegisterServerEvent("NotifyNearbyPlayers")
 AddEventHandler("NotifyNearbyPlayers", function(scentType, playerPos)
--- Loop through all players and check if they are within the detection radius
-for _, player in ipairs(GetPlayers()) do
-local playerPed = GetPlayerPed(player)
-local playerCoords = GetEntityCoords(playerPed)
-            
-if Vdist(playerCoords, playerPos) < Config.DetectionRadius then
-        -- Add the scent to the detected scents table
-        table.insert(detectedScents, scentType)
+    -- Loop through all players and check if they are within the detection radius
+    for _, player in ipairs(GetPlayers()) do
+        local playerPed = GetPlayerPed(player)
+        local playerCoords = GetEntityCoords(playerPed)
+        
+        if GetDistanceBetweenCoords(playerCoords.x, playerCoords.y, playerCoords.z, playerPos.x, playerPos.y, playerPos.z, true) < Config.DetectionRadius then
+            -- Add the scent to the detected scents table
+            table.insert(detectedScents, scentType)
 
-        -- Trigger the client event to display the notification
-        TriggerClientEvent("DisplayNotification", player, scentType)
+            -- Trigger the client event to display the notification
+            TriggerClientEvent("DisplayNotification", player, scentType)
 
-        -- Trigger the server event to store the scent on the client's end
-        TriggerClientEvent("StoreDetectedScents", player, detectedScents)
+            -- Trigger the server event to store the scent on the client's end
+            TriggerClientEvent("StoreDetectedScents", player, detectedScents)
+        end
     end
-end
 end)
+
 -- Event handler to listen for the "ClearAllScents" event
 RegisterServerEvent("ClearMyScents")
 AddEventHandler("ClearMyScents", function()
