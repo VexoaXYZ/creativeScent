@@ -1,5 +1,6 @@
 -- Create a table to store the scents that have been detected
 local detectedScents = {}
+local Players = {}
 
 -- Event handler to listen for the "NotifyNearbyPlayers" event
 RegisterServerEvent("NotifyNearbyPlayers")
